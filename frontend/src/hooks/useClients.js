@@ -26,13 +26,13 @@ export function useCreateClient() {
   });
 }
 
-export function useUpdateClient(id) {
+export function useUpdateClient() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (body) => api.put(`/clients/${id}`, body).then((r) => r.data),
-    onSuccess: () => {
+    mutationFn: ({ id, ...body }) => api.put(`/clients/${id}`, body).then((r) => r.data),
+    onSuccess: (_, variables) => {
       qc.invalidateQueries({ queryKey: keys.all });
-      qc.invalidateQueries({ queryKey: keys.one(id) });
+      if (variables?.id) qc.invalidateQueries({ queryKey: keys.one(variables.id) });
     },
   });
 }
